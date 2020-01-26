@@ -1,0 +1,98 @@
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+
+- task: MSBuild@1
+  displayName: Update versions
+  inputs:
+    solution: 'build\build.proj'
+    msbuildArguments: '/t:UpdateVersions'
+
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  displayName: NuGet restore
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:PublishProfile=FolderProfile'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: dotnet test
+  inputs:
+    command: 'test'
+    projects: '**\*Tests.csproj'
+    arguments: '--logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=[xunit.*]*'
+    nobuild: true
+
+- task: reportgenerator@4
+  displayName: ReportGenerator
+  inputs:
+    reports: '**/coverage.cobertura.xml'
+    targetdir: 'results'
+    verbosity: 'Verbose'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    summaryFileLocation: $(Build.SourcesDirectory)\**\coverage.cobertura.xml
+    reportDirectory: $(Build.SourcesDirectory)\results
+    codecoverageTool: cobertura
+
+- task: NuGetCommand@2
+  displayName: NuGet pack
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/DemoWebApplication.csproj'
+    packDestination: '$(Build.SourcesDirectory)'
+
+- task: NuGetAuthenticate@0
+
+- task: MSBuild@1
+  displayName: Push
+  inputs:
+    solution: 'build\build.proj'
+    msbuildArguments: '/t:Push'
+
+- task: rvo-vsts-promotepackage-task@3
+  displayName: Promote package
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+  inputs:
+    feed: 'test-azure-pipelines/Production'
+    inputType: 'packageFiles'
+    packagesDirectory: '$(Build.SourcesDirectory)'
+    packagesPattern: |
+      **/*.nupkg
+    releaseView: 'Release'
+
+- task: rvo-vsts-promotepackage-task@3
+  displayName: Promote package
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranchName'], 'release'))
+  inputs:
+    feed: 'test-azure-pipelines/Production'
+    inputType: 'packageFiles'
+    packagesDirectory: '$(Build.SourcesDirectory)'
+    packagesPattern: |
+      **/*.nupkg
+    releaseView: 'Prerelease'
+
+- task: rvo-vsts-promotepackage-task@3
+  displayName: Promote package
+  condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'master'), not(startsWith(variables['Build.SourceBranchName'], 'release')))
+  inputs:
+    feed: 'test-azure-pipelines/Development'
+    inputType: 'packageFiles'
+    packagesDirectory: '$(Build.SourcesDirectory)'
+    packagesPattern: |
+      **/*.nupkg
+    releaseView: 'Prerelease'

@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project=".\build.tasks" />
+  <Import Project="DemoWebApplication.versions.targets" />
+
+  <PropertyGroup>
+    <Workspace>.\..</Workspace>
+    <DevelopmentNuGetFeed>https://pkgs.dev.azure.com/danushkap/test-azure-pipelines/_packaging/Development/nuget/v3/index.json</DevelopmentNuGetFeed>
+    <ProductionNuGetFeed>https://pkgs.dev.azure.com/danushkap/test-azure-pipelines/_packaging/Production/nuget/v3/index.json</ProductionNuGetFeed>
+  </PropertyGroup>  
+  
+  <Target Name="UpdateVersions" DependsOnTargets="DetermineVersionSuffix">
+    <PropertyGroup>
+      <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(PatchVersion)</AssemblyVersion>
+      <PackageVersion>$(AssemblyVersion)$(VersionSuffix)</PackageVersion>
+    </PropertyGroup>
+    <Message Text='Assembly version number: $(AssemblyVersion)' />
+    <Message Text='Package version number: $(PackageVersion)' />
+    <ItemGroup>
+      <AssemblyVersionTransform Include="$(Workspace)\src\DemoWebApplication\DemoWebApplication.csproj">
+        <Find>&lt;AssemblyVersion&gt;1.0.0.0&lt;/AssemblyVersion&gt;</Find>
+        <ReplaceWith>&lt;AssemblyVersion&gt;$(AssemblyVersion)&lt;/AssemblyVersion&gt;</ReplaceWith>
+      </AssemblyVersionTransform>
+      <AssemblyVersionTransform Include="$(Workspace)\src\DemoWebApplication\DemoWebApplication.csproj">
+        <Find>&lt;FileVersion&gt;1.0.0.0&lt;/FileVersion&gt;</Find>
+        <ReplaceWith>&lt;FileVersion&gt;$(AssemblyVersion)&lt;/FileVersion&gt;</ReplaceWith>
+      </AssemblyVersionTransform>
+      <AssemblyVersionTransform Include="$(Workspace)\src\DemoWebApplication\DemoWebApplication.csproj">
+        <Find>&lt;Version&gt;1.0.0.0&lt;/Version&gt;</Find>
+        <ReplaceWith>&lt;Version&gt;$(PackageVersion)&lt;/Version&gt;</ReplaceWith>
+      </AssemblyVersionTransform>      
+    </ItemGroup>
+    <RegexTransform Items="@(AssemblyVersionTransform)" />
+  </Target>
+  
+  <Target Name="DetermineVersionSuffix" DependsOnTargets="QueryRcVersion">
+    <PropertyGroup>
+      <GitBranchShortName>$([System.Text.RegularExpressions.Regex]::Replace($(Build_SourceBranchName), `[^0-9a-zA-Z]+`, ``))</GitBranchShortName>
+      <GitBranchShortName Condition="$(GitBranchShortName.Length) &gt; 12">$(GitBranchShortName.Substring(0, 12))</GitBranchShortName>
+      <VersionSuffix Condition="$(Build_SourceBranchName.StartsWith('release'))">-rc.$(NextRcVersion)</VersionSuffix>
+      <VersionSuffix Condition="$(Build_SourceBranchName) != 'master' And !$(Build_SourceBranchName.StartsWith('release'))">-$(GitBranchShortName).$(Build_SourceVersion.Substring(0, 7))</VersionSuffix>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="QueryRcVersion" Condition="$(Build_SourceBranchName.StartsWith('release'))">
+    <Exec ConsoleToMSBuild="true" Command='$(Workspace)\.nuget\NuGet.exe list -prerelease -source $(ProductionNuGetFeed) -AllVersions'>
+      <Output TaskParameter="ConsoleOutput" PropertyName="CurrentPrerelease" />
+    </Exec>
+    <PropertyGroup>
+      <CurrentVersion>$([System.Text.RegularExpressions.Regex]::Match($(CurrentPrerelease), `$(AssemblyVersion)-rc.(\d+)`).get_Groups().get_Item(1).ToString())</CurrentVersion>
+      <CurrentVersion Condition="$(CurrentVersion) == ''">0</CurrentVersion>
+      <NextRcVersion>$([MSBuild]::Add($(CurrentVersion), 1))</NextRcVersion>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="Push">
+    <PropertyGroup>
+      <ApiKey>8859D4ED3BF2FBB71C6781B835648</ApiKey>
+      <Source>$(DevelopmentNuGetFeed)</Source>
+      <Source Condition="$(Build_SourceBranchName) == 'master' Or $(Build_SourceBranchName.StartsWith('release'))">$(ProductionNuGetFeed)</Source>
+    </PropertyGroup>
+    <Exec Command='$(Workspace)\.nuget\NuGet.exe push $(Workspace)\DemoWebApplication.*.nupkg $(ApiKey) -Source $(Source) -SkipDuplicate' />
+  </Target>  
+  
+</Project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$authors$</authors>
+    <description>$description$</description>
+  </metadata>
+  <files>
+    <file src="bin\Release\netcoreapp2.2\publish\**\*.*" target="content" />
+  </files>
+</package>
