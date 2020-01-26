@@ -6,13 +6,13 @@
 
   <PropertyGroup>
     <Workspace>.\..</Workspace>
+    <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(PatchVersion)</AssemblyVersion>
     <DevelopmentNuGetFeed>https://pkgs.dev.azure.com/danushkap/test-azure-pipelines/_packaging/Development/nuget/v3/index.json</DevelopmentNuGetFeed>
     <ProductionNuGetFeed>https://pkgs.dev.azure.com/danushkap/test-azure-pipelines/_packaging/Production/nuget/v3/index.json</ProductionNuGetFeed>
-  </PropertyGroup>  
+  </PropertyGroup>
   
   <Target Name="UpdateVersions" DependsOnTargets="DetermineVersionSuffix">
     <PropertyGroup>
-      <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(PatchVersion)</AssemblyVersion>
       <PackageVersion>$(AssemblyVersion)$(VersionSuffix)</PackageVersion>
     </PropertyGroup>
     <Message Text='Assembly version number: $(AssemblyVersion)' />
@@ -29,7 +29,7 @@
       <AssemblyVersionTransform Include="$(Workspace)\src\DemoWebApplication\DemoWebApplication.csproj">
         <Find>&lt;Version&gt;1.0.0.0&lt;/Version&gt;</Find>
         <ReplaceWith>&lt;Version&gt;$(PackageVersion)&lt;/Version&gt;</ReplaceWith>
-      </AssemblyVersionTransform>      
+      </AssemblyVersionTransform>
     </ItemGroup>
     <RegexTransform Items="@(AssemblyVersionTransform)" />
   </Target>
@@ -61,6 +61,6 @@
       <Source Condition="$(Build_SourceBranchName) == 'master' Or $(Build_SourceBranchName.StartsWith('release'))">$(ProductionNuGetFeed)</Source>
     </PropertyGroup>
     <Exec Command='$(Workspace)\.nuget\NuGet.exe push $(Workspace)\DemoWebApplication.*.nupkg $(ApiKey) -Source $(Source) -SkipDuplicate' />
-  </Target>  
+  </Target>
   
 </Project>
