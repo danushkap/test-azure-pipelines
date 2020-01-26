@@ -37,9 +37,9 @@
   <Target Name="DetermineVersionSuffix" DependsOnTargets="QueryRcVersion">
     <PropertyGroup>
       <GitBranchShortName>$([System.Text.RegularExpressions.Regex]::Replace($(Build_SourceBranchName), `[^0-9a-zA-Z]+`, ``))</GitBranchShortName>
-      <GitBranchShortName Condition="$(GitBranchShortName.Length) &gt; 12">$(GitBranchShortName.Substring(0, 12))</GitBranchShortName>
+      <GitBranchShortName Condition="$(GitBranchShortName.Length) &gt; 12">$(GitBranchShortName.Substring(0, 12).ToLower())</GitBranchShortName>
       <VersionSuffix Condition="$(Build_SourceBranchName.StartsWith('release'))">-rc.$(NextRcVersion)</VersionSuffix>
-      <VersionSuffix Condition="$(Build_SourceBranchName) != 'master' And !$(Build_SourceBranchName.StartsWith('release'))">-$(GitBranchShortName).$(Build_SourceVersion.Substring(0, 7))</VersionSuffix>
+      <VersionSuffix Condition="$(Build_SourceBranchName) != 'master' And !$(Build_SourceBranchName.StartsWith('release'))">-Branch.$(GitBranchShortName).Sha.$(Build_SourceVersion.Substring(0, 7))</VersionSuffix>
     </PropertyGroup>
   </Target>
   
