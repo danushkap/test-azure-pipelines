@@ -4,7 +4,9 @@
 
 This project demonstrate how Azure DevOps Pipelines can be used to;
 1. [CI] build a .NET solution having a very basic ASP.NET Core MVC website 
-1. [CD] deploy the site to an `Azure App Service` with the URL: https://testazurepipelines.azurewebsites.net/
+1. [CD] deploy the site to an `Azure App Service` with the URL: 
+
+https://testazurepipelines.azurewebsites.net/ [![Azure App Service](https://img.shields.io/website?down_message=offline&label=App%20Service&logo=microsoft-azure&logoColor=white&up_message=online&url=https%3A%2F%2Ftestazurepipelines.azurewebsites.net%2F)](https://testazurepipelines.azurewebsites.net/)
 
 The .NET solution `DemoWebApplication.sln` consist of:
 1. ASP.NET Core MVC project `src/DemoWebApplication` 
@@ -12,7 +14,7 @@ The .NET solution `DemoWebApplication.sln` consist of:
 
 Latest CI/CD status: 
 
-[![Azure DevOps builds](https://img.shields.io/azure-devops/build/danushkap/test-azure-pipelines/5?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_build/latest?definitionId=5)  [![Azure DevOps tests](https://img.shields.io/azure-devops/tests/danushkap/test-azure-pipelines/5?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_build/latest?definitionId=5)  [![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/danushkap/test-azure-pipelines/5?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_build/latest?definitionId=5)  [![Azure DevOps Artifact](https://img.shields.io/badge/NuGet-1.2.0-informational?logo=azure-artifacts)](https://dev.azure.com/danushkap/test-azure-pipelines/_packaging?_a=package&feed=Production&package=DemoWebApplication&version=1.2.0&protocolType=NuGet)  [![Azure DevOps Releases](https://img.shields.io/badge/Release--1.2.0-deployed-success?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_releaseProgress?releaseId=61)  [![Azure App Service](https://img.shields.io/website?down_message=offline&label=App%20Service&logo=microsoft-azure&logoColor=white&up_message=online&url=https%3A%2F%2Ftestazurepipelines.azurewebsites.net%2F)](https://testazurepipelines.azurewebsites.net/) 
+[![Azure DevOps builds](https://img.shields.io/azure-devops/build/danushkap/test-azure-pipelines/5?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_build/latest?definitionId=5)  [![Azure DevOps tests](https://img.shields.io/azure-devops/tests/danushkap/test-azure-pipelines/5?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_build/latest?definitionId=5)  [![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/danushkap/test-azure-pipelines/5?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_build/latest?definitionId=5)  [![Azure DevOps Artifact](https://img.shields.io/badge/NuGet-1.2.0-informational?logo=azure-artifacts)](https://dev.azure.com/danushkap/test-azure-pipelines/_packaging?_a=package&feed=Production&package=DemoWebApplication&version=1.2.0&protocolType=NuGet)  [![Azure DevOps Releases](https://img.shields.io/badge/Release--1.2.0-deployed-success?logo=azure-pipelines)](https://dev.azure.com/danushkap/test-azure-pipelines/_releaseProgress?releaseId=61)
 
 ### Continues Integration
 
