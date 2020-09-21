@@ -6,7 +6,8 @@ This project demonstrate how Azure DevOps Pipelines can be used to;
 1. [CI] build a .NET solution having a very basic ASP.NET Core MVC website 
 1. [CD] deploy the site to an `Azure App Service` with the URL: 
 
-https://testazurepipelines.azurewebsites.net/ [![Azure App Service](https://img.shields.io/website?down_message=offline&label=App%20Service&logo=microsoft-azure&logoColor=white&up_message=online&url=https%3A%2F%2Ftestazurepipelines.azurewebsites.net%2F)](https://testazurepipelines.azurewebsites.net/)
+https://testazurepipelines.azurewebsites.net/ 
+[![Azure App Service](https://img.shields.io/website?down_message=offline&label=App%20Service&logo=microsoft-azure&logoColor=white&up_message=online&url=https%3A%2F%2Ftestazurepipelines.azurewebsites.net%2F)](https://testazurepipelines.azurewebsites.net/)
 
 The .NET solution `DemoWebApplication.sln` consist of:
 1. ASP.NET Core MVC project `src/DemoWebApplication` 
